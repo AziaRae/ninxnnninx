@@ -1,0 +1,17 @@
+
+module my-nginx 1.0;
+
+require {
+	type websm_port_t;
+	type rtp_media_port_t;
+	type httpd_t;
+	class tcp_socket name_connect;
+}
+
+#============= httpd_t ==============
+
+#!!!! This avc is allowed in the current policy
+allow httpd_t rtp_media_port_t:tcp_socket name_connect;
+
+#!!!! This avc is allowed in the current policy
+allow httpd_t websm_port_t:tcp_socket name_connect;
