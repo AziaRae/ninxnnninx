@@ -1,50 +1,21 @@
+upstream UPSTREAM_NAME { 
+    server 127.0.0.1:<PORT>;
+};
+
 server {
-    # QUIC (HTTP/3) listeners - MUST come first
-    listen 443 quic reuseport;
-    listen [::]:443 quic reuseport;
-
-    # HTTP/2 fallback listeners
-    listen 443 ssl;
-    listen [::]:443 ssl;
-
-    # Protocol enablement
-    http2 on;
-    http3 on;
-
-    # QUIC optimizations
-    quic_retry on;
-    quic_gso on;
-
-    # TLS configuration
-    ssl_early_data on;
-    ssl_protocols TLSv1.2 TLSv1.3; # HTTP/3 requires TLS 1.3
-
-    # Certificate paths
-    ssl_certificate /etc/nginx/ssl/fullchain.pem;
-    ssl_certificate_key /etc/nginx/ssl/key.pem;
-    ssl_dhparam /etc/nginx/dhparam.pem;
-
-    # Client certificate verification
-    ssl_verify_client on;
-    ssl_client_certificate /etc/nginx/ssl/cloudflare.crt;
+    include /etc/nginx/snippets/listeners.conf;
+    include /etc/nginx/snippets/ssl.conf;
+    include /etc/nginx/snippets/proxy.conf;
 
     server_name <SERVER NAME>.imnot.uk;
-
-    # Critical HTTP/3 header
-    add_header Alt-Svc 'h3=":443"; ma=2592000';
 
     # Compression
     gzip on;
     gunzip on;
     gzip_static on;
 
-    # Proxy setup
-    proxy_http_version 1.1;
-    proxy_set_header Upgrade $http_upgrade;
-    proxy_set_header Connection "upgrade";
-
     location / {
-        proxy_pass http://127.0.0.1:<PORT>;
+        proxy_pass http://UPSTREAM_NAME;
 
         # Standard headers
         proxy_set_header Host $host;
