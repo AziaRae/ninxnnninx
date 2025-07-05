@@ -1,10 +1,13 @@
-upstream UPSTREAM_NAME { 
+upstream UPSTREAM_NAME {
     server 127.0.0.1:<PORT>;
 }
 
 server {
     include /etc/nginx/snippets/listeners.conf;
-    include /etc/nginx/snippets/ssl_{imnotuk/yanijin}.conf;
+    include /etc/nginx/snippets/ssl_ {
+        imnotuk/yaniji
+    }
+    .conf;
     include /etc/nginx/snippets/proxy.conf;
 
     server_name <SERVER NAME>.imnot.uk;
@@ -13,6 +16,11 @@ server {
     gzip on;
     gunzip on;
     gzip_static on;
+
+    # Block access to hidden files and directories (including subdirectories)
+    location ~ /\. {
+        return 404;
+    }
 
     location / {
         proxy_pass http://UPSTREAM_NAME;
@@ -34,4 +42,3 @@ server {
         proxy_set_header CF-Waf-Score $http_cf_waf_score;
         proxy_set_header CF-Bot-Score $http_cf_bot_score;
     }
-}
