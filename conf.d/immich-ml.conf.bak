@@ -1,6 +1,7 @@
 upstream IMMICH_ML {
     server 10.0.0.5:3003;
-    server immich-machine-learning:3003 backup;
+    server 172.18.0.5:3003;
+    server 10.0.0.3:3003
 }
 
 server {
@@ -25,3 +26,4 @@ server {
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
     }
+}
