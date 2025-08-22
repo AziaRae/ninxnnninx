@@ -4,10 +4,13 @@ upstream UPSTREAM_NAME {
 
 server {
     include /etc/nginx/snippets/listeners.conf;
-    include /etc/nginx/snippets/ssl_ {imnotuk/yaniji}.conf;
+    include /etc/nginx/snippets/ssl_{imnotuk/yaniji}.conf;
     include /etc/nginx/snippets/proxy.conf;
 
     server_name <SERVER NAME>.imnot.uk;
+
+    access_log /var/log/nginx/{servName}_access.log main;
+    error_log /var/log/nginx/{servName}_error.log;
 
     # Compression
     gzip on;
@@ -27,10 +30,12 @@ server {
         proxy_http_version 1.1;
         proxy_set_header Connection "";
         
-        proxy_set_header Host $host;
+        proxy_set_header Host $server_name;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Host $host;
+        proxy_set_header X-Original-Host $host;
 
         # Cloudflare headers
         proxy_set_header CF-Connecting-IP $http_cf_connecting_ip;
